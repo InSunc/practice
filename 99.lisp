@@ -454,12 +454,16 @@
 ;; 
 ;;     Hint: Use the built-in random number generator and the result of problem P20.
 
-(defun rnd-select (list number-of-elements)
-  (let ((mlist list))
-    (loop :repeat (or (- (length mlist) number-of-elements) 1)
-	  :do (setf mlist (remove-at mlist (1+ (random (length mlist)))))
-	  :finally (return mlist))))
-	
+(defun rnd-select (list elements-to-select &optional (resulting-list '()))
+  (if (zerop elements-to-select)
+      resulting-list
+      (let* ((random-position (1+ (random (length list))))
+	     (random-element (kth list random-position))
+	     (list-without-random-element (remove-at list random-position)))
+	(rnd-select list-without-random-element
+		    (1- elements-to-select)
+		    (cons random-element resulting-list)))))
+			      
      
 
 ;; P24 (*) Lotto: Draw N different random numbers from the set 1..M.
@@ -472,7 +476,7 @@
 
 (defun lotto-select (numbers-to-return range-end)
     (rnd-select (range 1 range-end) numbers-to-return))
-    
+
 
 
 
@@ -485,3 +489,6 @@
 
 (defun rnd-permu (list)
   (rnd-select list (length list)))
+
+
+
