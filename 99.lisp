@@ -492,3 +492,38 @@
 
 
 
+;; P26 (**) Generate the combinations of K distinct objects chosen from the N elements of a list
+;;     In how many ways can a committee of 3 be chosen from a group of 12 people? We all know that there are C(12,3) = 220 possibilities (C(N,K) denotes the well-known binomial coefficients). For pure mathematicians, this result may be great. But we want to really generate all the possibilities in a list.
+;; 
+;;     Example:
+;;     * (combination 3 '(a b c d e f))
+;;     ((A B C) (A B D) (A B E) ... ) 
+
+(defun combine (combination-length list &optional result)
+  (let ((combination-from-list-and-result (equalp combination-length
+						  (+ (length list) (length result))))
+	(combination-constructed (equalp (length result) combination-length)))
+    (cond
+      ((null list) (list result))
+      (combination-constructed (list result))
+      (combination-from-list-and-result (list (append result list)))
+      (t (append
+	  (combine combination-length
+		   (cdr list)
+		   (append result (list (car list))))
+	  (combine combination-length
+		   (cdr list)
+		   result))))))
+
+(defun combination (combination-length list &optional (result '()))
+  (cond
+    ((null list) nil)
+    ((< (length list) combination-length) nil)
+    ((zerop combination-length) nil)
+    (t (append
+	(combine combination-length
+		 (cdr list)
+		 (list (car list)))
+	(combination combination-length
+		     (cdr list))))))
+
